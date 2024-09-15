@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello World!</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #3498db;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+        .header .title {
+            flex: 1;
+            font-size: 1.5em;
+            text-align: left;
+        }
+        .header .nav {
+            display: flex;
+        }
+        .header .nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .header .nav a:hover {
+            text-decoration: underline;
+        }
+        /* Page sections */
+        .page {
+            display: none;
+            padding-top: 70px;
+        }
+        .active {
+            display: block;
+        }
+        /* Landing Page styles */
+        #landing h1 {
+            color: #333;
+            margin-top: 50px;
+        }
+        #cocktailInfo {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #555;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            outline: none;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        .cocktail-card {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .cocktail-card img {
+            width: 150px;
+            border-radius: 5px;
+            margin-right: 20px;
+        }
+        .cocktail-details h2 {
+            margin-top: 0;
+        }
+        .cocktail-details p {
+            margin: 5px 0;
+        }
+        .ingredients {
+            margin-top: 10px;
+        }
+        .ingredients ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        /* Snake Game styles */
+        #snake h1 {
+            color: #fff;
+            margin-top: 80px;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 20px auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 5px solid #fff;
+            box-shadow: 0 0 10px #fff;
+        }
+        .centered {
+            text-align: center;
+            color: #000; /* Changed color to black */
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px; /* Added margin-bottom for spacing */
+        }
+        /* Contact Us styles */
+        #contact h1 {
+            color: #333;
+            margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">Hello World!</div>
+        <div class="nav">
+            <a onclick="showPage('landing')">Cocktail Finder</a>
+            <a onclick="showPage('snake')">Snake</a>
+            <a onclick="showPage('contact')">Contact</a>
+        </div>
+    </div>
+
+    <!-- Landing Page -->
+    <div id="landing" class="page active">
+        <h1>Search for a Cocktail</h1>
+        <div>
+            <input type="text" id="cocktailName" placeholder="Enter cocktail name">
+            <button id="searchButton">Search</button>
+        </div>
+        <div id="cocktailInfo"></div>
+    </div>
+
+    <!-- Snake Game Page -->
+    <div id="snake" class="page">
+        <div class="centered">Press SPACE to Start/Restart, Controls: 'WASD'</div>
+        <canvas id="gameCanvas" width="1000" height="700"></canvas>
+    </div>
+
+    <!-- Contact Us Page -->
+    <div id="contact" class="page">
+        <h1>Contact Us</h1>
+        <p>You can contact us at <a href="mailto:contact@example.com">contact@example.com</a></p>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            var pages = document.getElementsByClassName('page');
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('active');
+            }
+            document.getElementById(pageId).classList.add('active');
+            if (pageId === 'snake') {
+                // Adjust canvas size if needed
+                if (typeof restartGame === 'function') {
+                    restartGame();
+                }
+            }
+        }
+
+        // Cocktail Search Script
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const name = document.getElementById('cocktailName').value.trim();
+            if (name === '') {
+                alert('Please enter a cocktail name.');
+                return;
+            }
+            fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${encodeURIComponent(name)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const cocktails = data.drinks;
+                    const cocktailInfoDiv = document.getElementById('cocktailInfo');
+                    cocktailInfoDiv.innerHTML = '';
+                    if (cocktails) {
+                        cocktails.forEach(cocktail => {
+                            const cocktailCard = document.createElement('div');
+                            cocktailCard.className = 'cocktail-card';
+
+                            const img = document.createElement('img');
+                            img.src = cocktail.strDrinkThumb;
+                            img.alt = cocktail.strDrink;
+
+                            const details = document.createElement('div');
+                            details.className = 'cocktail-details';
+
+                            const title = document.createElement('h2');
+                            title.textContent = cocktail.strDrink;
+
+                            const category = document.createElement('p');
+                            category.textContent = `Category: ${cocktail.strCategory}`;
+
+                            const instructions = document.createElement('p');
+                            instructions.textContent = cocktail.strInstructions;
+
+                            const ingredients = document.createElement('div');
+                            ingredients.className = 'ingredients';
+
+                            const ingredientsTitle = document.createElement('h3');
+                            ingredientsTitle.textContent = 'Ingredients:';
+
+                            const ingredientsList = document.createElement('ul');
+
+                            for (let i = 1; i <= 15; i++) {
+                                const ingredient = cocktail[`strIngredient${i}`];
+                                const measure = cocktail[`strMeasure${i}`];
+                                if (ingredient) {
+                                    const li = document.createElement('li');
+                                    li.textContent = `${measure ? measure : ''} ${ingredient}`;
+                                    ingredientsList.appendChild(li);
+                                }
+                            }
+
+                            ingredients.appendChild(ingredientsTitle);
+                            ingredients.appendChild(ingredientsList);
+
+                            details.appendChild(title);
+                            details.appendChild(category);
+                            details.appendChild(instructions);
+                            details.appendChild(ingredients);
+
+                            cocktailCard.appendChild(img);
+                            cocktailCard.appendChild(details);
+
+                            cocktailInfoDiv.appendChild(cocktailCard);
+                        });
+                    } else {
+                        cocktailInfoDiv.innerHTML = '<p>No cocktails found with that name.</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('cocktailInfo').innerHTML = '<p>An error occurred while fetching the cocktail data.</p>';
+                    console.error('Error:', error);
+                });
+        });
+
+        // Snake Game Script
+        (function() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Game variables
+            let gridSize = 25; // size of each grid cell
+            let tileCountX = canvas.width / gridSize;
+            let tileCountY = canvas.height / gridSize;
+
+            let snakeX = Math.floor(tileCountX / 2);
+            let snakeY = Math.floor(tileCountY / 2);
+
+            let velocityX = 0;
+            let velocityY = 0;
+
+            let snakeTrail = [];
+            let tailLength = 5;
+
+            let appleX = Math.floor(Math.random() * tileCountX);
+            let appleY = Math.floor(Math.random() * tileCountY);
+
+            let gameStarted = false;
+            let gameInterval;
+
+            // Event listeners
+            document.addEventListener('keydown', keyDownEvent);
+
+            function keyDownEvent(e) {
+                switch(e.key) {
+                    case 'w':
+                    case 'W':
+                        if (velocityY == 1) break;
+                        velocityX = 0;
+                        velocityY = -1;
+                        break;
+                    case 's':
+                    case 'S':
+                        if (velocityY == -1) break;
+                        velocityX = 0;
+                        velocityY = 1;
+                        break;
+                    case 'a':
+                    case 'A':
+                        if (velocityX == 1) break;
+                        velocityX = -1;
+                        velocityY = 0;
+                        break;
+                    case 'd':
+                    case 'D':
+                        if (velocityX == -1) break;
+                        velocityX = 1;
+                        velocityY = 0;
+                        break;
+                    case ' ':
+                        if (!gameStarted) {
+                            startGame();
+                        } else {
+                            restartGame();
+                        }
+                        break;
+                }
+            }
+
+            function startGame() {
+                gameStarted = true;
+                randomDirection();
+                gameInterval = setInterval(gameLoop, 1000/15); // 15 FPS
+            }
+
+            function restartGame() {
+                clearInterval(gameInterval);
+                snakeX = Math.floor(tileCountX / 2);
+                snakeY = Math.floor(tileCountY / 2);
+                snakeTrail = [];
+                tailLength = 5;
+                appleX = Math.floor(Math.random() * tileCountX);
+                appleY = Math.floor(Math.random() * tileCountY);
+                randomDirection();
+                gameInterval = setInterval(gameLoop, 1000/15);
+            }
+
+            function randomDirection() {
+                const directions = [
+                    {x:0, y:-1}, // Up
+                    {x:0, y:1},  // Down
+                    {x:-1, y:0}, // Left
+                    {x:1, y:0},  // Right
+                ];
+                const randomDir = directions[Math.floor(Math.random() * directions.length)];
+                velocityX = randomDir.x;
+                velocityY = randomDir.y;
+            }
+
+            function gameLoop() {
+                if (!document.getElementById('snake').classList.contains('active')) {
+                    // Pause the game if the snake page is not active
+                    return;
+                }
+
+                snakeX += velocityX;
+                snakeY += velocityY;
+
+                // Wrap snake position on edge of screen
+                if (snakeX < 0) {
+                    snakeX = tileCountX - 1;
+                }
+                if (snakeX >= tileCountX) {
+                    snakeX = 0;
+                }
+                if (snakeY < 0) {
+                    snakeY = tileCountY - 1;
+                }
+                if (snakeY >= tileCountY) {
+                    snakeY = 0;
+                }
+
+                // Draw background
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw apple
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(appleX * gridSize + gridSize / 2, appleY * gridSize + gridSize / 2, gridSize / 2 - 2, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Draw snake
+                for (let i = 0; i < snakeTrail.length; i++) {
+                    ctx.fillStyle = `hsl(${(i * 10) % 360}, 100%, 50%)`;
+                    ctx.beginPath();
+                    ctx.arc(snakeTrail[i].x * gridSize + gridSize / 2, snakeTrail[i].y * gridSize + gridSize / 2, gridSize / 2 - 2, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // Check collision with self
+                    if (snakeTrail[i].x == snakeX && snakeTrail[i].y == snakeY) {
+                        // Game over
+                        tailLength = 5;
+                    }
+                }
+
+                // Add new position to snake trail
+                snakeTrail.push({x: snakeX, y: snakeY});
+                while (snakeTrail.length > tailLength) {
+                    snakeTrail.shift();
+                }
+
+                // Check collision with apple
+                if (snakeX == appleX && snakeY == appleY) {
+                    tailLength++;
+                    appleX = Math.floor(Math.random() * tileCountX);
+                    appleY = Math.floor(Math.random() * tileCountY);
+                }
+            }
+
+            // Expose restartGame function
+            window.restartGame = restartGame;
+        })();
+    </script>
+</body>
+</html>
