@@ -48,6 +48,32 @@
         .active {
             display: block;
         }
+        /* Login Page styles */
+        #login {
+            padding-top: 150px;
+        }
+        #login input[type="password"] {
+            padding: 10px;
+            font-size: 1em;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        #login button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            outline: none;
+            margin-left: 10px;
+        }
+        #login button:hover {
+            background-color: #2980b9;
+        }
         /* Landing Page styles */
         #landing h1 {
             color: #333;
@@ -138,7 +164,7 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="header" id="header">
         <div class="title">Hello World!</div>
         <div class="nav">
             <a onclick="showPage('landing')">Cocktail Finder</a>
@@ -147,8 +173,16 @@
         </div>
     </div>
 
+    <!-- Login Page -->
+    <div id="login" class="page active">
+        <h1>Please Enter Password to Continue</h1>
+        <input type="password" id="password" placeholder="Enter password">
+        <button onclick="validatePassword()">Login</button>
+        <p id="loginMessage" style="color:red;"></p>
+    </div>
+
     <!-- Landing Page -->
-    <div id="landing" class="page active">
+    <div id="landing" class="page">
         <h1>Search for a Cocktail</h1>
         <div>
             <input type="text" id="cocktailName" placeholder="Enter cocktail name">
@@ -170,6 +204,22 @@
     </div>
 
     <script>
+        // Hide header initially
+        document.getElementById('header').style.display = 'none';
+
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const correctPassword = 'openSesame'; // Set your desired password here
+            if (password === correctPassword) {
+                document.getElementById('login').classList.remove('active');
+                showPage('landing');
+                // Show header after successful login
+                document.getElementById('header').style.display = 'flex';
+            } else {
+                document.getElementById('loginMessage').innerText = 'Incorrect password. Please try again.';
+            }
+        }
+
         function showPage(pageId) {
             var pages = document.getElementsByClassName('page');
             for (var i = 0; i < pages.length; i++) {
